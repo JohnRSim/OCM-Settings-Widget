@@ -1,0 +1,45 @@
+
+/** Add Tab support **/
+nav { 
+	margin:10px 0px;
+}
+nav ul {
+	display: flex;
+	margin:0px;
+	padding:0px;
+	border-bottom:solid 1px #5B5E61;
+}
+nav ul li {
+	list-style: none;
+	flex:1;
+	text-align: center;
+	color:rgba(255,255,255,0.6);
+	transition: box-shadow 0.3s;
+	cursor: pointer;
+	min-height: 32px;
+}
+
+nav ul li.active {
+	color:#fff;
+	box-shadow: inset 0px -2px 0px 0px rgb(255 255 255);
+	font-weight: bold;
+}
+
+nav ul li:hover {
+	color:#fff;
+	box-shadow: inset 0px -2px 0px 0px rgb(255 255 255);
+}
+
+article { 
+	display: none;
+}
+
+article.active {
+	display: block;
+}
+/** xAdd Tab support **/
+
+.scs-component-settings hr {
+	border-color: #5B5E61;
+	margin-top: 10px;
+  }
