@@ -3,7 +3,7 @@
 	"settingsData": {
 		"settingsHeight": 240,
 		"settingsWidth": 300,
-		"settingsRenderOption": "dialog",
+		"settingsRenderOption": "inline",
 		"componentLayouts": [
 			{
 				"name": "default",

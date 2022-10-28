@@ -101,7 +101,7 @@
 		<!-- xSettings -->
 		
 		<!-- Advanced -->
-		<article id="SA-settings" data-bind="css: { active: activeTab() === 'settings'}">
+		<article id="SA-advanced" data-bind="css: { active: activeTab() === 'advanced'}">
 			Add your advanced props here!
 		</article>
 		<!-- xAdvanced -->
@@ -160,7 +160,7 @@
 			var self = this;
 
 			//lists
-			var presetTpls = ['Tpl_A','Tpl_B','Tpl_C'];
+			presetTpls = ['Tpl_A','Tpl_B','Tpl_C'];
 
 			//active tab
 			self.activeTab = ko.observable();
