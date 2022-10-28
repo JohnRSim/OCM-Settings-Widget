@@ -2,7 +2,7 @@
 
 
 # OCM-Settings-Widget
-Demo Widget showing how to 
+Demo Oracle Content Management Component showing how to 
 - add custom tabs.
 - dynamic settings & frame resizing.
 - assign asset values to component.
