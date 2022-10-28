@@ -1,4 +1,5 @@
-![customTabs](https://user-images.githubusercontent.com/364208/193847606-9db5d2a4-df8b-4ea2-af59-a1d72f5cabe6.png)
+![image](https://user-images.githubusercontent.com/364208/198570734-76a6eb17-ed10-4a08-859e-ecc1e0cecf02.png)
+
 
 # OCM-Settings-Widget
 Demo Widget showing how to add custom tabs containing props and dynamic settings frame resizing.
