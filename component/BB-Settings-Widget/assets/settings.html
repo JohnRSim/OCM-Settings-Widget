@@ -21,17 +21,71 @@
 <body data-bind="visible: true" style="display:none; margin:0px; padding:0px;background:transparent;background-image:none;">
 	<!-- ko if: initialized -->
 	<div class="scs-component-settings">
+		<!-- Asset Name -->
+		<div class="scs-panelInput">
+			<label class="oj-label-header">Asset Name</label>
+			<div class="oj-label">
+				<div id="assetTitle" class="asset-field" data-bind="text: assetTitle,  attr:{title: assetTitle}"
+					title=""></div>
+			</div>
+		</div>
+
+		<!-- Asset ID -->
+		<div class="scs-panelInput">
+			<label class="oj-label-header">Asset ID</label>
+			<div class="oj-label">
+				<div id="assetID" class="asset-field" data-bind="text: assetID,  attr:{title: assetID}" title=""></div>
+			</div>
+		</div>
+
+		<!-- Asset ID Selectors -->
+		<div class="scs-panelInput">
+			<!-- Select -->
+			<button data-bind="click: pickAsset" style="margin-right: 2.3%; width: 48%;" class="oj-asset-button">
+				<span class="oj-button-text">Select</span>
+			</button>
+
+			<!-- Open -->
+			<button data-bind="click: openAsset" style="width: 48%;" class="oj-asset-button">
+				<span class="oj-button-text">Open</span>
+			</button>
+
+			<!-- oj-button oj-default -->
+		</div>
+		
+		<hr>
+
 		<!-- Nav tabset -->
 		<nav>
 			<ul>
-				<li class="active" data-bind="css: { active: (activeTab() === 'settings')}, click: () => {updateTab('settings')}">Custom</li>
+				<li class="active" data-bind="css: { active: (activeTab() === 'templates')}, click: () => {updateTab('templates')}">Templates</li>
+				<li data-bind="css: { active: (activeTab() === 'custom')}, click: () => {updateTab('custom')}">Custom</li>
 				<li data-bind="css: { active: (activeTab() === 'advanced')}, click: () => {updateTab('advanced')}">Advanced</li>
 			</ul>
 		</nav>
 		<!-- xNav tabset -->
 
 		<!-- Settings -->
-		<article id="SA-settings" data-bind="css: { active: activeTab() === 'settings'}">
+		<article id="SA-templates" data-bind="css: { active: activeTab() === 'templates'}">
+			<div>
+				<!-- Templates-->
+				<div class="scs-panelInput">
+					<label for="titleColor" class="oj-label-header">Preset Templates</label>
+					<select 
+						name="Templates" 
+						id="presetTpl" 
+						class="oj-combobox-input" 
+						data-bind="options: presetTpls,
+							value: presetTpl,
+							valueAllowUnset: false">
+					</select>
+				</div>
+			</div>
+		</article>
+		<!-- xSettings -->
+
+		<!-- Settings -->
+		<article id="SA-custom" data-bind="css: { active: activeTab() === 'custom'}">
 			<div>
 				<!-- Width -->
 				<label id="widthLabel" for="width" class="settings-heading" data-bind="text: 'Image Width'"></label>
@@ -105,6 +159,9 @@
 		var SettingsViewModel = function () {
 			var self = this;
 
+			//lists
+			var presetTpls = ['Tpl_A','Tpl_B','Tpl_C'];
+
 			//active tab
 			self.activeTab = ko.observable();
 
@@ -112,6 +169,13 @@
 			self.width = ko.observable();
 			self.linkText = ko.observable();
 			self.linkURL = ko.observable();
+			//tpl selection
+			self.presetTpl = ko.observable();
+			//asset selection
+			self.assetID = ko.observable();
+			self.assetTitle = ko.observable();
+			//component asset data
+			self.componentAssets = ko.observable();
 
 			// create rest of viewModel
 			self.initialized = ko.observable(false);
@@ -120,12 +184,13 @@
 			// Get custom settings
 			SitesSDK.getProperty('customSettingsData', function (data) {
 				//active tab
-				self.activeTab('settings'); //settings,advanced
+				self.activeTab('templates'); //settings,advanced
 
 				//update observables
 				self.width(data.width);
-				self.linkURL(data.linkURL);
 				self.linkText(data.nls && data.nls.linkText);
+				self.linkURL(data.linkURL);
+				self.presetTpl(data.presetTpl);
 
 				// note that viewModel is initialized and can start saving data
 				self.initialized(true);
@@ -136,23 +201,85 @@
 				self.saveData = true;
 			});
 
+			// Get custom asset data
+			SitesSDK.getProperty('componentAssets', function (data) {
+				//console.log('settings.html: getting componentAssets: ', data);
+				self.componentAssets(data);
 
-			// save whenever any updates occur
-			self.save = ko.computed(function () {
+				if (data.length > 0) {
+					self.assetID(data[0].contentId)
+					self.assetTitle(data[0].title)
+				}
+
+				// note that viewModel is initialized and can start saving data
+				self.initialized(true);
+				self.saveData = true;
+			});
+
+			// save whenever any updates occur save custom settings
+			self.save = ko.computed(function() {
 				var saveconfig = {
+					'assetID': self.assetID(),
 					'width': isNaN(self.width()) ? self.width() : self.width() + 'px',
 					'linkURL': self.linkURL(),
 					'nls': {
 						linkText: self.linkText()
-					}
+					},
+					'nlpresetTpls': self.presetTpl()
 				};
+
+				var saveComponentAssets = self.componentAssets();
 
 				// save data in page
 				if (self.saveData) {
 					SitesSDK.setProperty('customSettingsData', saveconfig);
+					SitesSDK.setProperty('componentAssets', saveComponentAssets);
 				}
 			}, self);
 			
+			/**
+			 * pickAsset
+			 * Launch assetPicker
+			 **/
+			self.pickAsset = function() {
+				console.log('[pickAsset]');
+
+				SitesSDK.openAssetPicker({
+					select: 'single',
+					header: {
+						hide: false,
+						create: true,
+					},
+					filter: {
+						tabs: {
+							filter: true,
+							categories: true,
+						},
+					},
+					filterValue: {
+						collectionId: null,
+						contentItemTypes: [], //add your types to filter on selection here
+					}
+				}).then(function (selection) {
+					// console.log(selection);
+					if (selection.length > 0) {
+						self.assetID(selection[0].contentId);
+						self.assetTitle(selection[0].title)
+						self.componentAssets(selection);
+					}
+
+				});
+			}
+
+			/**
+			 * openAsset
+			 * Launch asset in new window/tab
+			 **/
+			self.openAsset = function() {
+				console.log('[openAsset]');
+
+				retval = window.open(`/documents/assets/view/${self.assetID()}`, '_blank').focus();
+			}
 
 			/**
 			 * updateTab
