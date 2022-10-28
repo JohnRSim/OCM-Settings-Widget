@@ -2,6 +2,8 @@
 
 
 # OCM-Settings-Widget
-Demo Widget showing how to add custom tabs containing props and dynamic settings frame resizing.
-
+Demo Widget showing how to 
+- add custom tabs.
+- dynamic settings & frame resizing.
+- assign asset values to component.
 
